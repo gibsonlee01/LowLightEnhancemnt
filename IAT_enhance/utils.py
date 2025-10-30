@@ -11,6 +11,8 @@ import math
 from IQA_pytorch import SSIM, MS_SSIM
 import matplotlib.pyplot as plt
 import torch.distributed as dist
+from torchvision.transforms import Compose, ToTensor, Normalize, ConvertImageDtype
+
 
 EPS = 1e-3
 PI = 22.0 / 7.0
@@ -109,7 +111,7 @@ def validation(model, val_loader):
     PSNR_mean = np.mean(psnr_list)
     print('The SSIM Value is:', SSIM_mean)
     print('The PSNR Value is:', PSNR_mean)
-    return SSIM_mean, PSNR_mean
+    return PSNR_mean, SSIM_mean
 
 def validation_shadow(model, val_loader):
 
@@ -184,6 +186,3 @@ class L_color(nn.Module):
         k = torch.pow(torch.pow(Drg, 2) + torch.pow(Drb, 2) + torch.pow(Dgb, 2), 0.5)
 
         return k
-
-
-

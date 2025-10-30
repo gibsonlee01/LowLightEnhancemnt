@@ -17,7 +17,7 @@ from tqdm import tqdm
 parser = argparse.ArgumentParser()
 parser.add_argument('--gpu_id', type=str, default=0)
 parser.add_argument('--save', type=bool, default=False)
-parser.add_argument('--img_val_path', type=str, default="/data/unagi0/cui_data/light_dataset/LOL_v2/Test/Low/")
+parser.add_argument('--img_val_path', type=str, default="/content/drive/MyDrive/LOL-v2/Real_captured/Test/Low/")
 parser.add_argument('--pre_norm', type=bool, default=True)
 config = parser.parse_args()
 
@@ -27,7 +27,7 @@ val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=1, shuffle=Fals
 os.environ['CUDA_VISIBLE_DEVICES'] = str(config.gpu_id)
 
 model = IAT().cuda()
-model.load_state_dict(torch.load("best_Epoch_lol.pth"))
+model.load_state_dict(torch.load("/content/drive/MyDrive/IAT_test/IAT_enhance/workdirs/snapshots_folder_lol/chromeball_best_Epoch.pth"))
 model.eval()
 
 

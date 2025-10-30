@@ -22,9 +22,9 @@ from IQA_pytorch import SSIM
 from utils import PSNR, adjust_learning_rate, validation, LossNetwork, visualization
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--gpu_id', type=str, default=1)
-parser.add_argument('--img_path', type=str, default="/data/unagi0/cui_data/light_dataset/LOL/Train/Low/")
-parser.add_argument('--img_val_path', type=str, default="/data/unagi0/cui_data/light_dataset/LOL/Test/Low/")
+parser.add_argument('--gpu_id', type=str, default=0)
+parser.add_argument('--img_path', type=str, default="/content/drive/MyDrive/LOL-v2/Real_captured/Train/Low/")
+parser.add_argument('--img_val_path', type=str, default="/content/drive/MyDrive/LOL-v2/Real_captured/Test/Low/")
 parser.add_argument("--normalize", action="store_false", help="Default Normalize in LOL training.")
 parser.add_argument('--model_type', type=str, default='s')
 
@@ -92,6 +92,8 @@ for epoch in range(config.num_epochs):
     print('the epoch is:', epoch)
     for iteration, imgs in enumerate(train_loader):
         low_img, high_img = imgs[0].cuda(), imgs[1].cuda()
+       
+        # print(low_img.shape, high_img.shape)
         # Checking!
         #visualization(low_img, 'show/low', iteration)
         #visualization(high_img, 'show/high', iteration)
@@ -104,21 +106,22 @@ for epoch in range(config.num_epochs):
         loss.backward()
         
         optimizer.step()
-        scheduler.step()
 
         if ((iteration + 1) % config.display_iter) == 0:
             print("Loss at iteration", iteration + 1, ":", loss.item())
 
     # Evaluation Model
     model.eval()
-    PSNR_mean, SSIM_mean = validation(model, val_loader)
+    SSIM_mean, PSNR_mean  = validation(model, val_loader)
 
     with open(config.snapshots_folder + '/log.txt', 'a+') as f:
-        f.write('epoch' + str(epoch) + ':' + 'the SSIM is' + str(SSIM_mean) + 'the PSNR is' + str(PSNR_mean) + '\n')
+        f.write(f"epoch {epoch}: SSIM={SSIM_mean:.4f}, PSNR={PSNR_mean:.4f}\n")
 
     if SSIM_mean > ssim_high:
         ssim_high = SSIM_mean
         print('the highest SSIM value is:', str(ssim_high))
         torch.save(model.state_dict(), os.path.join(config.snapshots_folder, "best_Epoch" + '.pth'))
+    
+    scheduler.step()
 
     f.close()

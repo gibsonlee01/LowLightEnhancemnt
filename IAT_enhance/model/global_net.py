@@ -1,4 +1,3 @@
-import imp
 import torch
 import torch.nn as nn
 from timm.models.layers import trunc_normal_, DropPath, to_2tuple
@@ -118,6 +117,7 @@ class Global_pred(nn.Module):
         gamma = self.gamma_linear(gamma).squeeze(-1) + self.gamma_base
         #print(self.gamma_base, self.gamma_linear(gamma))
         color = self.color_linear(color).squeeze(-1).view(-1, 3, 3) + self.color_base
+
         return gamma, color
 
 if __name__ == "__main__":
